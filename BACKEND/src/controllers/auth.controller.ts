@@ -87,9 +87,14 @@ export const login = async (
   req: Request, res: Response
 ): Promise<void> => {
   try{
-    const { username, password } = req.body;
-    const user = await prisma.user.findUnique({
-      where: { username: username },
+    const { identifier, password } = req.body;
+    const user = await prisma.user.findFirst({
+      where: {
+        OR:[
+          { username: identifier },
+          { emailAddress: identifier }
+        ]
+      }
     });
     if (!user) {
       res.status(404).json({ message: "Wrong login details" });
