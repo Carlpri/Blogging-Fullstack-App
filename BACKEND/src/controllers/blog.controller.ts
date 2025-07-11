@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
 // Creating a new blog
 export const createBlog = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const { title, content,image,synopsis } = req.body;
-  console.log ("DEBUG - req.user:", req.user);
+
   const userId =req.user?.id;
 
   if(!userId) {

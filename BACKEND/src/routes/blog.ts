@@ -16,4 +16,5 @@ router.get("/:id", getBlogById);
 router.patch("/:id", verifyToken, validate(blogSchema), updateBlog);
 router.delete("/:id",verifyToken, deleteBlog);
 
+
 export default router;

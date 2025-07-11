@@ -23,7 +23,7 @@ export const CreateBlogForm = () => {
     
     const handleSubmit = async () => {
         try {
-            const res = await axios.post('http://localhost:5678/api/blogs', form, {
+            const res = await axios.post('http://localhost:5678/api/blogs/create', form, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }

@@ -22,7 +22,7 @@ export const LoginForm = () => {
     try {
       const res = await axios.post('http://localhost:5678/api/auth/login', form);
       localStorage.setItem('token', res.data.token);
-      navigate('/blogs/new');
+      navigate('/blogs');
     } catch (err: unknown) {
         if (axios.isAxiosError(err)) {
             setError(err.response?.data?.message || 'Login failed');

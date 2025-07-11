@@ -3,6 +3,7 @@ import { LandingPage } from "./componnents/LandingPage";
 import {LoginForm } from "./componnents/LoginForm";
 import RegistrationForm from "./componnents/RegistrationForm";
 import {CreateBlogForm } from "./componnents/CreateBlogForm";
+import BlogList from "./pages/BlogList";
 import "./App.css";
 
 function App() {
@@ -13,6 +14,8 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegistrationForm />} />
+          <Route path="/blogs" element={<BlogList />} />
+          
           <Route path="/blogs/new" element={<CreateBlogForm />} />
           {/* Add more routes as needed */}
         </Routes>
