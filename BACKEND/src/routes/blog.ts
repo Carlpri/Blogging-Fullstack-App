@@ -9,11 +9,11 @@ import{ getMyBlogs } from "../controllers/blog.controller";
 
 const router: Router = Router();
 
-router.post("/create", validate(blogSchema),verifyToken, createBlog);
+router.post("/create", verifyToken,validate(blogSchema), createBlog);
 router.get("/", getBlogs);
-router.get("/:id", getBlogById);
 router.get("/me", verifyToken, getMyBlogs); 
-router.patch("/:id", validate(blogSchema),verifyToken, updateBlog);
+router.get("/:id", getBlogById);
+router.patch("/:id", verifyToken, validate(blogSchema), updateBlog);
 router.delete("/:id",verifyToken, deleteBlog);
 
 export default router;

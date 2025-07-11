@@ -11,31 +11,35 @@ const prisma = new PrismaClient();
 // Creating a new blog
 export const createBlog = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const { title, content,image,synopsis } = req.body;
+  console.log ("DEBUG - req.user:", req.user);
   const userId =req.user?.id;
 
   if(!userId) {
-    res.status(400).json({ message: "Login to create a blog!" });
+    res.status(401).json({ message: "Login to create a blog!" });
     return;
   }
 
   try {
     const newBlog = await prisma.blog.create({
-      data: {
+      data:{
         title,
         content,
         image,
-        userId: userId, // Ensure userId is set from the authenticated request
+        userId,
         synopsis,
         dateCreated: new Date(),
         lastUpdated: new Date(), 
-      },
+      }
     });
 
     res.status(201).json(newBlog);
   } catch (error) {
+    console.error("CREATE BLOG ERROR",error);
     res.status(500).json({ message: "Error creating blog", error });
   }
+  console.log ("USER:",req.user);
 };
+
 export const getBlogs = async (_req: Request, res: Response): Promise<void> => {
   try {
     const blogs = await prisma.blog.findMany({
