@@ -15,9 +15,10 @@ function App() {
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegistrationForm />} />
           <Route path="/blogs" element={<BlogList />} />
-          
+
+
           <Route path="/blogs/new" element={<CreateBlogForm />} />
-          {/* Add more routes as needed */}
+         
         </Routes>
        
       </Router>

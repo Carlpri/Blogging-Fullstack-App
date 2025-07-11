@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardMedia, Typography, Button as MuiButton, Box } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, Button as MuiButton, Box} from '@mui/material';
 import Grid from '@mui/material/Grid';
 
 
@@ -54,12 +54,26 @@ const BlogList = () => {
         if (token) {
             type JwtPayload = { userId: string };
             const decoded = jwtDecode<JwtPayload>(token);
-            setCurrentUserId(decoded.userId); // adjust this based on your JWT payload
+            setCurrentUserId(decoded.userId); 
         }
     }, []);
 
     const handleCreateBlog = () => {
         navigate('/blogs/new');
+    };
+
+    const handleDeleteBlog = async (blogId: string) => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete(`http://localhost:5678/api/blogs/${blogId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setBlogs(prev => prev.filter(blog => blog.id !== blogId));
+        } catch (err) {
+            alert('Failed to delete blog');
+        }
     };
 
     const userBlogs = blogs
@@ -69,6 +83,10 @@ const BlogList = () => {
    
 
     const otherBlogs = blogs.filter(blog => blog.userId !== currentUserId);
+
+    const displayedUserBlogs = userBlogs.slice(0, 6);
+    const displayedOtherBlogs = otherBlogs.slice(0, 6 - displayedUserBlogs.length);
+    const displayedBlogs = displayedUserBlogs.concat(displayedOtherBlogs);
 
     return(
         <Box sx={{ p: 4 }}>
@@ -91,17 +109,17 @@ const BlogList = () => {
             )}
 
             {userBlogs.length > 0 && (
-                <Box mb={4}>
+                <Box mb={4} >
                     <Typography variant="h5" gutterBottom>My Recent Blogs</Typography>
                     <Grid container spacing={3}>
-                        {userBlogs.map(blog => (
+                        {displayedBlogs.map(blog => (
                             <Grid key={blog.id} item xs={12} sm={6} md={4}>
-                                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                <Card sx={{ height: 350, display: 'flex', flexDirection: 'column' }}>
                                     {blog.image && (
                                         <CardMedia
                                             component="img"
                                             height="180"
-                                            image={blog.image}
+                                            image={`http://localhost:5678/${blog.image}`}
                                             alt={blog.title}
                                         />
                                     )}
@@ -122,6 +140,17 @@ const BlogList = () => {
                                         <MuiButton variant="outlined" size="small" onClick={() => navigate(`/blogs/${blog.id}`)} sx={{ mt: 1 }}>
                                             View Blog
                                         </MuiButton>
+                                        {blog.userId === currentUserId && (
+                                            <MuiButton
+                                                variant="outlined"
+                                                size="small"
+                                                color="error"
+                                                onClick={() => handleDeleteBlog(blog.id)}
+                                                sx={{ mt: 1, ml: 1 }}
+                                            >
+                                                Delete
+                                            </MuiButton>
+                                        )}
                                     </CardContent>
                                 </Card>
                             </Grid>

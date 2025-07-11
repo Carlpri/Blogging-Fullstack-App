@@ -15,6 +15,7 @@ export const CreateBlogForm = () => {
     });
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const [imageFile, setImageFile] = useState<File | null>(null);
     
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -23,9 +24,20 @@ export const CreateBlogForm = () => {
     
     const handleSubmit = async () => {
         try {
-            const res = await axios.post('http://localhost:5678/api/blogs/create', form, {
+            const token = localStorage.getItem('token');
+            const formData = new FormData();
+            formData.append('title', form.title);
+            formData.append('content', form.content);
+            formData.append('synopsis', form.synopsis);
+            formData.append('tags', form.tags);
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+
+            const res = await axios.post('http://localhost:5678/api/blogs/create', formData, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
                 }
             });
             if (res.status === 201) {
@@ -84,14 +96,16 @@ export const CreateBlogForm = () => {
                     onChange={handleChange}
                 />
         
-                <TextField
-                    label="Image URL"
-                    name="image"
-                    fullWidth
-                    margin="normal"
-                    value={form.image}
-                    onChange={handleChange}
-                />
+        <input
+  type="file"
+  accept="image/*"
+  onChange={e => {
+    if (e.target.files && e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+    }
+  }}
+  style={{ margin: '16px 0', display: 'block' }}
+/>
         
                 <TextField
                     label="Tags (comma separated)"
