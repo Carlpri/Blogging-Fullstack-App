@@ -11,7 +11,6 @@ import {
   Button as MuiButton,
   Box,
 } from "@mui/material";
-import Grid from "@mui/material/Grid";
 
 import { jwtDecode } from "jwt-decode";
 import ProfileMenu from "../componnents/ProfileMenu";
@@ -42,6 +41,7 @@ const BlogList = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log('Fetched blogs:', response.data.length, 'blogs');
         setBlogs(response.data);
       } catch (err) {
         setError("Failed to fetch blogs");
@@ -192,9 +192,9 @@ const BlogList = () => {
           >
             All Blogs
           </Typography>
-          <Grid container spacing={3}>
-            {blogs.slice(0, 4).map((blog) => (
-              <Grid key={blog.id} item xs={12} sm={6} lg={6}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
+            {blogs.map((blog) => (
+              <Box key={blog.id}>
                 <Card
                   sx={{ 
                     height: 400, 
@@ -288,9 +288,9 @@ const BlogList = () => {
                     )}
                   </CardContent>
                 </Card>
-              </Grid>
+              </Box>
             ))}
-          </Grid>
+          </Box>
         </Box>
       </Box>
     </Box>

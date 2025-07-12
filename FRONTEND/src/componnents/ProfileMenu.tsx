@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Avatar,
   Menu,
@@ -7,35 +7,57 @@ import {
   Box,
   IconButton,
   Divider,
-  Button,
+  CircularProgress,
 } from '@mui/material';
-import { AccountCircle, Logout, Edit, Email, Article } from '@mui/icons-material';
+import {  Logout, Edit,  Article } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-
-type User = {
-  firstName: string;
-  lastName: string;
-  emailAddress: string;
-  blogCount: number;
-};
+import axios from 'axios';
 
 export const ProfileMenu = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [blogCount, setBlogCount] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  // Fetch user's blog count
+  const fetchBlogCount = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost:5678/api/blogs/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setBlogCount(response.data.length);
+    } catch (error) {
+      console.error('Error fetching blog count:', error);
+      setBlogCount(0);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Get user info from token
   const getUserInfo = () => {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const decoded = jwtDecode<{ firstName?: string; lastName?: string; emailAddress?: string }>(token);
+        const decoded = jwtDecode<{ 
+          firstName?: string; 
+          lastName?: string; 
+          emailAddress?: string;
+          username?: string;
+        }>(token);
+        
+        console.log('Decoded token:', decoded); // Debug log
+        
         return {
           firstName: decoded.firstName || 'User',
           lastName: decoded.lastName || 'Name',
           emailAddress: decoded.emailAddress || 'user@example.com',
-          blogCount: 0, // This will be updated when we fetch user's blogs
+          username: decoded.username || '',
         };
       } catch (error) {
         console.error('Error decoding token:', error);
@@ -43,17 +65,22 @@ export const ProfileMenu = () => {
           firstName: 'User',
           lastName: 'Name',
           emailAddress: 'user@example.com',
-          blogCount: 0,
+          username: '',
         };
       }
     }
     return null;
   };
 
+  // Fetch blog count when component mounts
+  useEffect(() => {
+    fetchBlogCount();
+  }, []);
+
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    const userInfo = getUserInfo();
-    setUser(userInfo);
     setAnchorEl(event.currentTarget);
+    // Refresh blog count when menu opens
+    fetchBlogCount();
   };
 
   const handleMenuClose = () => {
@@ -147,9 +174,13 @@ export const ProfileMenu = () => {
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
             <Article sx={{ fontSize: 16, color: '#666' }} />
-            <Typography variant="body2" sx={{ color: '#666' }}>
-              {userInfo.blogCount} blogs
-            </Typography>
+            {loading ? (
+              <CircularProgress size={16} sx={{ color: '#666' }} />
+            ) : (
+              <Typography variant="body2" sx={{ color: '#666' }}>
+                {blogCount} blogs
+              </Typography>
+            )}
           </Box>
         </Box>
 

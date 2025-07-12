@@ -83,6 +83,51 @@ export const updateUser = async (
   }
 };
 
+export const changePassword = async (
+  req: Request, res: Response
+): Promise<void> => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = (req as any).user?.id; // From verifyToken middleware
+    
+    console.log('Change password request:', { userId, hasCurrentPassword: !!currentPassword, hasNewPassword: !!newPassword });
+
+    if (!userId) {
+      res.status(401).json({ message: "User ID not found in token" });
+      return;
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    // Verify current password
+    const isCurrentPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
+    if (!isCurrentPasswordCorrect) {
+      res.status(400).json({ message: "Current password is incorrect" });
+      return;
+    }
+
+    // Hash new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedNewPassword },
+    });
+
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (e) {
+    res.status(500).json({ message: "Failed to change password" });
+  }
+};
+
 export const login = async (
   req: Request, res: Response
 ): Promise<void> => {
@@ -108,7 +153,13 @@ export const login = async (
 
     
     const token = jwt.sign(
-      { userId: user.id, firstName: user.firstName, username: user.username },
+      { 
+        userId: user.id, 
+        firstName: user.firstName, 
+        lastName: user.lastName,
+        emailAddress: user.emailAddress,
+        username: user.username 
+      },
       process.env.JWT_SECRET!);
       res.cookie("token", token, {
         httpOnly: true,

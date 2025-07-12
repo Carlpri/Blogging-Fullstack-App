@@ -4,7 +4,9 @@ import {LoginForm } from "./componnents/LoginForm";
 import RegistrationForm from "./componnents/RegistrationForm";
 import {CreateBlogForm } from "./componnents/CreateBlogForm";
 import BlogList from "./pages/BlogList";
+import BlogDetail from "./pages/BlogDetail";
 import { EditBlogForm } from "./componnents/EditBlogForm";
+import ChangePasswordForm from "./componnents/ChangePasswordForm";
 import "./App.css";
 
 function App() {
@@ -16,10 +18,10 @@ function App() {
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegistrationForm />} />
           <Route path="/blogs" element={<BlogList />} />
-
-
+          <Route path="/blogs/:id" element={<BlogDetail />} />
           <Route path="/blogs/new" element={<CreateBlogForm />} />
           <Route path="/blogs/:id/edit" element={<EditBlogForm />} />
+          <Route path="/change-password" element={<ChangePasswordForm />} />
 
         </Routes>
        
