@@ -5,11 +5,40 @@ import { validate } from "../middlewares/validate";
 import { blogSchema } from "../schemas/blog.schema";
 import { verifyToken } from "../middlewares/verifyToken";
 import{ getMyBlogs } from "../controllers/blog.controller";
+import multer from 'multer';
+import path from 'path';
+
+// Configure multer to preserve file extensions and generate proper filenames
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    // Generate unique filename with original extension
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
 
 
 const router: Router = Router();
 
-router.post("/create", verifyToken,validate(blogSchema), createBlog);
+router.post(
+  "/create",
+  verifyToken,
+  upload.single('image'), 
+  (req, res, next) => {
+    if (req.file) {
+      
+      req.body.image = `http://localhost:5678/uploads/${req.file.filename}`;
+    }
+    next();
+  },
+    validate(blogSchema),
+  createBlog
+);
 router.get("/", getBlogs);
 router.get("/me", verifyToken, getMyBlogs); 
 router.get("/:id", getBlogById);

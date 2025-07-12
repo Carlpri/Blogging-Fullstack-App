@@ -10,9 +10,9 @@ const prisma = new PrismaClient();
 
 // Creating a new blog
 export const createBlog = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-  const { title, content,image,synopsis } = req.body;
+  const { title, content, image, synopsis } = req.body;
 
-  const userId =req.user?.id;
+  const userId = req.user?.id;
 
   if(!userId) {
     res.status(401).json({ message: "Login to create a blog!" });
@@ -20,11 +20,13 @@ export const createBlog = async (req: AuthenticatedRequest, res: Response): Prom
   }
 
   try {
+    console.log('Creating blog with image URL:', image);
+    
     const newBlog = await prisma.blog.create({
       data:{
         title,
         content,
-        image,
+        image: image || '', 
         userId,
         synopsis,
         dateCreated: new Date(),
@@ -32,6 +34,7 @@ export const createBlog = async (req: AuthenticatedRequest, res: Response): Prom
       }
     });
 
+    console.log('Created blog:', newBlog);
     res.status(201).json(newBlog);
   } catch (error) {
     console.error("CREATE BLOG ERROR",error);
@@ -43,8 +46,14 @@ export const createBlog = async (req: AuthenticatedRequest, res: Response): Prom
 export const getBlogs = async (_req: Request, res: Response): Promise<void> => {
   try {
     const blogs = await prisma.blog.findMany({
-      include: {user: true}, 
+      include: {user: true},
+      orderBy: {
+        dateCreated: 'desc' // Sort by most recent first
+      }
     });
+
+    // Log the blogs to see what image URLs are stored
+    console.log('Blogs with image URLs:', blogs.map(blog => ({ id: blog.id, title: blog.title, image: blog.image })));
 
     res.status(200).json(blogs);
   } catch (error) {

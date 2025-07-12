@@ -4,6 +4,7 @@ import {LoginForm } from "./componnents/LoginForm";
 import RegistrationForm from "./componnents/RegistrationForm";
 import {CreateBlogForm } from "./componnents/CreateBlogForm";
 import BlogList from "./pages/BlogList";
+import { EditBlogForm } from "./componnents/EditBlogForm";
 import "./App.css";
 
 function App() {
@@ -18,12 +19,13 @@ function App() {
 
 
           <Route path="/blogs/new" element={<CreateBlogForm />} />
-         
+          <Route path="/blogs/:id/edit" element={<EditBlogForm />} />
+
         </Routes>
        
       </Router>
-      <footer className="footer">
-        <p>©Carlos 2025 Write Stack. All rights reserved.</p>
+      <footer className="footer" style={{ marginTop: "-10px", marginBottom: "-30px",paddingTop: "0px",paddingBottom: "0px", textAlign: "center" }}>
+        <p>©WriteStack 2025. All rights reserved.</p>
       </footer>
     </>
   );
