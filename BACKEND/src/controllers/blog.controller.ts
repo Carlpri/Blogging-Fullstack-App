@@ -78,6 +78,13 @@ export const getBlogById = async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
+    console.log('Blog being returned:', {
+      id: blog.id,
+      title: blog.title,
+      dateCreated: blog.dateCreated,
+      lastUpdated: blog.lastUpdated
+    });
+
     res.status(200).json(blog);
   } catch (error) {
     res.status(500).json({ message: "Error fetching blog", error });
@@ -109,7 +116,7 @@ export const getMyBlogs = async (req: AuthenticatedRequest, res: Response): Prom
 
 export const updateBlog = async (req:AuthenticatedRequest , res: Response): Promise<void> => {
   const { id } = req.params;
-  const { title, content } = req.body;
+  const { title, content, synopsis, image } = req.body;
   const userId = req.user?.id;
 
   try {
@@ -117,17 +124,25 @@ export const updateBlog = async (req:AuthenticatedRequest , res: Response): Prom
     const blog = await prisma.blog.findUnique({ where: { id } });
 
     if (!blog || blog.userId !== userId) {
-      res.status(403).json({ message: 'Kindly log in to update tis blog' });
+      res.status(403).json({ message: 'Kindly log in to update this blog' });
       return;
     }
 
     const updatedBlog = await prisma.blog.update({
       where: { id },
-      data: { title, content, lastUpdated: new Date() },
+      data: { 
+        title, 
+        content, 
+        synopsis,
+        image,
+        lastUpdated: new Date() 
+      },
     });
 
+    console.log('Updated blog:', updatedBlog);
     res.status(200).json(updatedBlog);
   } catch (error) {
+    console.error('Error updating blog:', error);
     res.status(500).json({ message: "Error updating the blog", error });
   }
 };

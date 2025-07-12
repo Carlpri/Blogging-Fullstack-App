@@ -23,7 +23,8 @@ interface Blog {
   synopsis: string;
   image: string;
   tags: string;
-  createdAt: string;
+  dateCreated: string;
+  lastUpdated: string;
   userId: string;
   user: {
     firstName: string;
@@ -55,6 +56,11 @@ export const BlogDetail = () => {
     const fetchBlog = async () => {
       try {
         const response = await axios.get(`http://localhost:5678/api/blogs/${id}`);
+        console.log('Blog data received:', response.data);
+        console.log('Date fields:', {
+          dateCreated: response.data.dateCreated,
+          lastUpdated: response.data.lastUpdated
+        });
         setBlog(response.data);
       } catch (err) {
         if (axios.isAxiosError(err)) {
@@ -93,7 +99,15 @@ export const BlogDetail = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    if (!dateString) return 'Unknown date';
+    
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      console.error('Invalid date string:', dateString);
+      return 'Invalid date';
+    }
+    
+    return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
@@ -294,9 +308,14 @@ export const BlogDetail = () => {
                 </Typography>
               </Box>
               <Typography variant="body2" color="text.secondary">
-                {formatDate(blog.createdAt)}
+                Created: {formatDate(blog.dateCreated)}
               </Typography>
             </Box>
+            {blog.lastUpdated && blog.lastUpdated !== blog.dateCreated && (
+              <Typography variant="body2" color="text.secondary">
+                Updated: {formatDate(blog.lastUpdated)}
+              </Typography>
+            )}
 
             {blog.synopsis && (
               <Box sx={{ mb: 3 }}>
