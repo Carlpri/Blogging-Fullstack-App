@@ -8,13 +8,11 @@ import{ getMyBlogs } from "../controllers/blog.controller";
 import multer from 'multer';
 import path from 'path';
 
-// Configure multer to preserve file extensions and generate proper filenames
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/');
   },
   filename: (req, file, cb) => {
-    // Generate unique filename with original extension
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
   }

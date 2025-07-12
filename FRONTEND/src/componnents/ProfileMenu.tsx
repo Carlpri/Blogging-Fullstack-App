@@ -20,7 +20,6 @@ export const ProfileMenu = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  // Fetch user's blog count
   const fetchBlogCount = async () => {
     const token = localStorage.getItem('token');
     if (!token) return;
@@ -39,7 +38,6 @@ export const ProfileMenu = () => {
     }
   };
 
-  // Get user info from token
   const getUserInfo = () => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -51,7 +49,7 @@ export const ProfileMenu = () => {
           username?: string;
         }>(token);
         
-        console.log('Decoded token:', decoded); // Debug log
+        console.log('Decoded token:', decoded); 
         
         return {
           firstName: decoded.firstName || 'User',
@@ -72,14 +70,12 @@ export const ProfileMenu = () => {
     return null;
   };
 
-  // Fetch blog count when component mounts
   useEffect(() => {
     fetchBlogCount();
   }, []);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-    // Refresh blog count when menu opens
     fetchBlogCount();
   };
 
@@ -94,14 +90,13 @@ export const ProfileMenu = () => {
   };
 
   const handleChangePassword = () => {
-    // Navigate to change password page (you can create this later)
     navigate('/change-password');
     handleMenuClose();
   };
 
   const getInitials = (firstName: string, lastName: string) => {
     if (!firstName || !lastName) {
-      return 'U'; // Default to 'U' for User if names are missing
+      return 'U';
     }
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
@@ -150,7 +145,6 @@ export const ProfileMenu = () => {
           },
         }}
       >
-        {/* User Info Section */}
         <Box sx={{ p: 2, textAlign: 'center' }}>
           <Avatar
             sx={{
@@ -186,7 +180,6 @@ export const ProfileMenu = () => {
 
         <Divider />
 
-        {/* Menu Items */}
         <MenuItem onClick={handleChangePassword} sx={{ py: 1.5 }}>
           <Edit sx={{ mr: 2, color: '#666' }} />
           <Typography>Change Password</Typography>

@@ -28,7 +28,6 @@ export const ChangePasswordForm = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    // Clear messages when user starts typing
     setError('');
     setSuccess('');
   };
@@ -42,7 +41,6 @@ export const ChangePasswordForm = () => {
         return;
       }
 
-      // Client-side validation
       if (form.newPassword !== form.confirmPassword) {
         setError('New passwords do not match');
         return;
@@ -53,7 +51,7 @@ export const ChangePasswordForm = () => {
         return;
       }
 
-      // Check password complexity
+      // here, we Check password strength
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
       if (!passwordRegex.test(form.newPassword)) {
         setError('New password must contain at least one uppercase letter, one lowercase letter, and one number');
@@ -83,7 +81,6 @@ export const ChangePasswordForm = () => {
           confirmPassword: ''
         });
         
-        // Redirect to blogs page after 2 seconds
         setTimeout(() => {
           navigate('/blogs');
         }, 2000);
@@ -122,8 +119,6 @@ export const ChangePasswordForm = () => {
           zIndex: 0,
         }}
       />
-
-      {/* Content */}
       <Container 
         maxWidth="sm"
         sx={{

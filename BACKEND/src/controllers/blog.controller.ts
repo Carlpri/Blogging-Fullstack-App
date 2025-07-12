@@ -8,7 +8,6 @@ import { AuthenticatedRequest } from '../middlewares/verifyToken';
 const prisma = new PrismaClient();
 
 
-// Creating a new blog
 export const createBlog = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const { title, content, image, synopsis } = req.body;
 
@@ -49,12 +48,10 @@ export const getBlogs = async (_req: Request, res: Response): Promise<void> => {
       where: { isDeleted: false }, // Only show non-deleted blogs
       include: {user: true},
       orderBy: {
-        dateCreated: 'desc' // Sort by most recent first
+        dateCreated: 'desc' // Latest created blogs to appear first
       }
     });
 
-    // Log the blogs to see what image URLs are stored
-    console.log('Blogs with image URLs:', blogs.map(blog => ({ id: blog.id, title: blog.title, image: blog.image })));
 
     res.status(200).json(blogs);
   } catch (error) {
@@ -64,7 +61,6 @@ export const getBlogs = async (_req: Request, res: Response): Promise<void> => {
 
 
 
-// Fetching a blog by ID
 export const getBlogById = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 
@@ -72,7 +68,7 @@ export const getBlogById = async (req: Request, res: Response): Promise<void> =>
     const blog = await prisma.blog.findUnique({
       where: { 
         id: String(id),
-        isDeleted: false // Only show non-deleted blogs
+        isDeleted: false 
       },
       include: { user: true }, 
     });
@@ -89,7 +85,6 @@ export const getBlogById = async (req: Request, res: Response): Promise<void> =>
 };
 
 
-// Fetching my blogs (User can only see their own blogs)
 export const getMyBlogs = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const userId = req.user?.id;
 
@@ -111,8 +106,6 @@ export const getMyBlogs = async (req: AuthenticatedRequest, res: Response): Prom
   }
 };
 
-
-// Updating my blog   (User can update only their own blogs)
 
 export const updateBlog = async (req:AuthenticatedRequest , res: Response): Promise<void> => {
   const { id } = req.params;

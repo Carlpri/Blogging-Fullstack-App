@@ -62,7 +62,6 @@ const RegisterForm = () => {
         }}
       />
 
-      {/* Content */}
       <Container 
         maxWidth="sm"
         sx={{
