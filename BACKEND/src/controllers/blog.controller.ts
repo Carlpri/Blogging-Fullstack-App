@@ -1,14 +1,13 @@
 //BLOG CONTROLLER
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { AuthenticatedRequest } from '../middlewares/verifyToken';
 
 
  
 const prisma = new PrismaClient();
 
 
-export const createBlog = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+export const createBlog = async (req: Request, res: Response): Promise<void> => {
   const { title, content, image, synopsis } = req.body;
 
   const userId = req.user?.id;
@@ -92,7 +91,7 @@ export const getBlogById = async (req: Request, res: Response): Promise<void> =>
 };
 
 
-export const getMyBlogs = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+export const getMyBlogs = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
 
   if (!userId) {
@@ -114,7 +113,7 @@ export const getMyBlogs = async (req: AuthenticatedRequest, res: Response): Prom
 };
 
 
-export const updateBlog = async (req:AuthenticatedRequest , res: Response): Promise<void> => {
+export const updateBlog = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
   const { title, content, synopsis, image } = req.body;
   const userId = req.user?.id;
@@ -147,7 +146,7 @@ export const updateBlog = async (req:AuthenticatedRequest , res: Response): Prom
   }
 };
 
-export const deleteBlog = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+export const deleteBlog = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
   const userId = req.user?.id;
 
