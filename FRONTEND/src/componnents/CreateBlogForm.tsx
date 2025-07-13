@@ -1,7 +1,7 @@
 // USER CAN CREATE A BLOG POST
 import { useState } from 'react';
 import { TextField, Button, Typography, Box, Container, Alert } from '@mui/material';
-import axios from 'axios';
+import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -34,7 +34,7 @@ export const CreateBlogForm = () => {
                 formData.append('image', imageFile);
             }
 
-            const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/blogs/create`, formData, {
+            const res = await api.post('/blogs/create', formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
@@ -52,8 +52,9 @@ export const CreateBlogForm = () => {
             }
             navigate('/blogs');
         } catch (err: unknown) {
-            if (axios.isAxiosError(err)) {
-                setError(err.response?.data?.message || 'Failed to create blog post');
+            if (err && typeof err === 'object' && 'response' in err) {
+                const axiosError = err as { response?: { data?: { message?: string } } };
+                setError(axiosError.response?.data?.message || 'Failed to create blog post');
             } else {
                 setError('Unexpected Error occurred');
             }

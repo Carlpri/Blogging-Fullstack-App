@@ -14,7 +14,7 @@ import {
   Alert
 } from '@mui/material';
 import { ArrowBack, Edit, Delete } from '@mui/icons-material';
-import axios from 'axios';
+import { api } from '../services/api';
 
 interface Blog {
   id: string;
@@ -55,7 +55,7 @@ export const BlogDetail = () => {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/blogs/${id}`);
+        const response = await api.get(`/blogs/${id}`);
         console.log('Blog data received:', response.data);
         console.log('Date fields:', {
           dateCreated: response.data.dateCreated,
@@ -63,8 +63,9 @@ export const BlogDetail = () => {
         });
         setBlog(response.data);
       } catch (err) {
-        if (axios.isAxiosError(err)) {
-          setError(err.response?.data?.message || 'Failed to fetch blog post');
+        if (err && typeof err === 'object' && 'response' in err) {
+          const axiosError = err as { response?: { data?: { message?: string } } };
+          setError(axiosError.response?.data?.message || 'Failed to fetch blog post');
         } else {
           setError('An unexpected error occurred');
         }
@@ -85,13 +86,14 @@ export const BlogDetail = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/blogs/${id}`, {
+      await api.delete(`/blogs/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       navigate('/blogs');
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || 'Failed to delete blog post');
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as { response?: { data?: { message?: string } } };
+        setError(axiosError.response?.data?.message || 'Failed to delete blog post');
       } else {
         setError('An unexpected error occurred');
       }

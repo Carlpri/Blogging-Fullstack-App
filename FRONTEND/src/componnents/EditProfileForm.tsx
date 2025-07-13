@@ -14,7 +14,7 @@ import {
 import { ArrowBack, Save } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
+import { api } from '../services/api';
 
 interface UserInfo {
   firstName: string;
@@ -82,8 +82,8 @@ export const EditProfileForm = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/auth/update`,
+      const response = await api.patch(
+        '/auth/update',
         formData,
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -101,8 +101,9 @@ export const EditProfileForm = () => {
       }, 2000);
 
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || 'Failed to update profile');
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as { response?: { data?: { message?: string } } };
+        setError(axiosError.response?.data?.message || 'Failed to update profile');
       } else {
         setError('An unexpected error occurred');
       }

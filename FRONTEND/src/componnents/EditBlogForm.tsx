@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { TextField, Button, Typography, Box, Container, Alert, Card, CardMedia } from '@mui/material';
-import axios from 'axios';
+import { api } from '../services/api';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const EditBlogForm = () => {
@@ -23,7 +23,7 @@ export const EditBlogForm = () => {
         const fetchBlog = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/blogs/${id}`, {
+                const response = await api.get(`/blogs/${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -73,7 +73,7 @@ export const EditBlogForm = () => {
             
             console.log('Updating blog with data:', form);
             
-            const response = await axios.patch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/blogs/${id}`, formData, {
+            const response = await api.patch(`/blogs/${id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
@@ -88,8 +88,9 @@ export const EditBlogForm = () => {
             }, 1500);
         } catch (err:unknown) {
             console.error('Error updating blog:', err);
-            if (axios.isAxiosError(err)) {
-                setError(err.response?.data?.message || 'Failed to update blog');
+            if (err && typeof err === 'object' && 'response' in err) {
+                const axiosError = err as { response?: { data?: { message?: string } } };
+                setError(axiosError.response?.data?.message || 'Failed to update blog');
             } else {
                 setError('Failed to update blog');
             }

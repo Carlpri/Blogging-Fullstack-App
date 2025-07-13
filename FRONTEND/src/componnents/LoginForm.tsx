@@ -1,7 +1,7 @@
 // src/components/LoginForm.tsx
 import { useState } from 'react';
 import { TextField, Button, Typography, Box, Container, Alert, InputAdornment, IconButton } from '@mui/material';
-import axios from 'axios';
+import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -20,12 +20,13 @@ export const LoginForm = () => {
 
  const handleSubmit = async () => {
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/auth/login`, form);
+      const res = await api.post('/auth/login', form);
       localStorage.setItem('token', res.data.token);
       navigate('/blogs');
     } catch (err: unknown) {
-        if (axios.isAxiosError(err)) {
-            setError(err.response?.data?.message || 'Login failed');
+        if (err && typeof err === 'object' && 'response' in err) {
+            const axiosError = err as any;
+            setError(axiosError.response?.data?.message || 'Login failed');
         } else {
       setError('Unexpected Error occurred');
         }

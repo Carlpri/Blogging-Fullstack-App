@@ -1,7 +1,7 @@
 // src/components/RegisterForm.tsx
 import { useState } from 'react';
 import { TextField, Button, Typography, Box, Container, Alert } from '@mui/material';
-import axios from 'axios';
+import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 const RegisterForm = () => {
@@ -22,13 +22,14 @@ const RegisterForm = () => {
 
   const handleSubmit = async () => {
     try {
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/auth/register`, form);
+      await api.post('/auth/register', form);
       setSuccess('Registration successful. You can now login.');
       setError('');
       setTimeout(() => navigate('/login'), 2000);
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || 'Registration failed');
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as any;
+        setError(axiosError.response?.data?.message || 'Registration failed');
       } else {
         setError('Unexpected error occurred');
       }

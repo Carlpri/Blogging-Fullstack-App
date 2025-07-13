@@ -10,7 +10,7 @@ import {
   IconButton 
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import axios from 'axios';
+import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 export const ChangePasswordForm = () => {
@@ -57,8 +57,8 @@ export const ChangePasswordForm = () => {
         return;
       }
 
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/auth/change-password`,
+      const response = await api.post(
+        '/auth/change-password',
         {
           currentPassword: form.currentPassword,
           newPassword: form.newPassword,
@@ -85,8 +85,9 @@ export const ChangePasswordForm = () => {
         }, 2000);
       }
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || 'Failed to change password');
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as { response?: { data?: { message?: string } } };
+        setError(axiosError.response?.data?.message || 'Failed to change password');
       } else {
         setError('An unexpected error occurred');
       }
