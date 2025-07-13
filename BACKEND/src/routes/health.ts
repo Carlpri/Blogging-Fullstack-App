@@ -1,0 +1,68 @@
+import { Router } from "express";
+import { PrismaClient } from "@prisma/client";
+
+const router = Router();
+const prisma = new PrismaClient();
+
+// Health check endpoint
+router.get("/", async (req, res) => {
+  try {
+    // Test database connection
+    await prisma.$queryRaw`SELECT 1`;
+    
+    // Get basic stats
+    const userCount = await prisma.user.count();
+    const blogCount = await prisma.blog.count();
+    
+    res.status(200).json({
+      status: "healthy",
+      timestamp: new Date().toISOString(),
+      database: "connected",
+      stats: {
+        users: userCount,
+        blogs: blogCount
+      }
+    });
+  } catch (error) {
+    console.error("Health check failed:", error);
+    res.status(500).json({
+      status: "unhealthy",
+      timestamp: new Date().toISOString(),
+      database: "disconnected",
+      error: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
+});
+
+// Database test endpoint
+router.get("/db-test", async (req, res) => {
+  try {
+    // Test basic CRUD operations
+    const testUser = await prisma.user.findFirst({
+      select: { id: true, firstName: true, lastName: true, emailAddress: true }
+    });
+    
+    const testBlog = await prisma.blog.findFirst({
+      select: { id: true, title: true, userId: true },
+      include: { user: { select: { firstName: true, lastName: true } } }
+    });
+    
+    res.status(200).json({
+      message: "Database operations successful",
+      userTest: testUser ? "User table accessible" : "No users found",
+      blogTest: testBlog ? "Blog table accessible" : "No blogs found",
+      sampleData: {
+        user: testUser,
+        blog: testBlog
+      }
+    });
+  } catch (error) {
+    console.error("Database test failed:", error);
+    res.status(500).json({
+      message: "Database test failed",
+      error: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
+});
+
+export default router; 

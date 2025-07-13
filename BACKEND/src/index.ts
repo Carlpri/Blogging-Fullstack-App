@@ -1,6 +1,7 @@
 import express from "express";
 import authRouter from "./routes/auth";
 import blogRouter from "./routes/blog";
+import healthRouter from "./routes/health";
 import cors from "cors";
 import multer from 'multer';
 import fs from 'fs';
@@ -31,6 +32,7 @@ app.get("/", (_req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/blogs", blogRouter);
+app.use("/api/health", healthRouter);
 
 const port = process.env.PORT || 5678;
 app.listen(port, () => console.log(`App is live on port ${port}`));

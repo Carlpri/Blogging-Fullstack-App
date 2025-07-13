@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { validate } from "../middlewares/validate";
 import { registerSchema } from "../schemas/registerSchema";
+import { loginSchema } from "../schemas/loginSchema";
 import { register} from "../controllers/auth.controller";
 import checkUserExist from "../controllers/checkUserExist.controller";
 import { updateUserSchema } from "../schemas/updateUser.schema";
@@ -14,7 +15,7 @@ const router: Router = Router();
 
 router.post("/register", validate(registerSchema), checkUserExist, register);
 router.patch("/update", verifyToken, validate(updateUserSchema), updateUser);
-router.post("/login",login);
+router.post("/login", validate(loginSchema), login);
 router.post("/change-password", verifyToken, validate(changePasswordSchema), changePassword);
 
 

@@ -15,6 +15,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     password } = req.body;
 
   try {
+    console.log('Registration attempt:', { firstName, lastName, emailAddress, username });
+    
     const existingUser = await prisma.user.findUnique({
       where: { emailAddress },
     });
@@ -26,7 +28,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await prisma.user.create({
+    const newUser = await prisma.user.create({
       data: {
         firstName,
         lastName,
@@ -36,9 +38,11 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       },
     });
 
+    console.log('User created successfully:', { userId: newUser.id, emailAddress });
     res.status(201).json({ message: "User created successfully" });
   } catch (e) {
-    res.status(500).json({ message: "Something went wrong!" });
+    console.error('Registration error:', e);
+    res.status(500).json({ message: "Registration failed", error: e instanceof Error ? e.message : "Unknown error" });
   }
 };
 
@@ -160,6 +164,8 @@ export const login = async (
 ): Promise<void> => {
   try{
     const { identifier, password } = req.body;
+    console.log('Login attempt:', { identifier });
+    
     const user = await prisma.user.findFirst({
       where: {
         OR:[
@@ -168,16 +174,21 @@ export const login = async (
         ]
       }
     });
+    
     if (!user) {
+      console.log('User not found for identifier:', identifier);
       res.status(404).json({ message: "Wrong login details" });
       return;
     }
+    
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
+      console.log('Incorrect password for user:', user.emailAddress);
       res.status(400).json({ message: "Oops!! Wrong login details" });
       return;
     }
 
+    console.log('Login successful for user:', user.emailAddress);
     
     const token = jwt.sign(
       { 
@@ -188,24 +199,26 @@ export const login = async (
         username: user.username 
       },
       process.env.JWT_SECRET!);
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-      }).json({
-        message: "Login successful",
-        user: {
-          id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          emailAddress: user.emailAddress,
-          username: user.username,
-        },
-        token: token,
-      });
+      
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    }).json({
+      message: "Login successful",
+      user: {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        emailAddress: user.emailAddress,
+        username: user.username,
+      },
+      token: token,
+    });
   
   }catch(e) {
-    res.status(500).json({ message: "Oopss☹️! Login failed" });
+    console.error('Login error:', e);
+    res.status(500).json({ message: "Login failed", error: e instanceof Error ? e.message : "Unknown error" });
   }
 }
 
