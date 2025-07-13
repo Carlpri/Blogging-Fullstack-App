@@ -43,7 +43,6 @@ router.get("/db-test", async (req, res) => {
     });
     
     const testBlog = await prisma.blog.findFirst({
-      select: { id: true, title: true, userId: true },
       include: { user: { select: { firstName: true, lastName: true } } }
     });
     
@@ -52,8 +51,18 @@ router.get("/db-test", async (req, res) => {
       userTest: testUser ? "User table accessible" : "No users found",
       blogTest: testBlog ? "Blog table accessible" : "No blogs found",
       sampleData: {
-        user: testUser,
-        blog: testBlog
+        user: testUser ? {
+          id: testUser.id,
+          firstName: testUser.firstName,
+          lastName: testUser.lastName,
+          emailAddress: testUser.emailAddress
+        } : null,
+        blog: testBlog ? {
+          id: testBlog.id,
+          title: testBlog.title,
+          userId: testBlog.userId,
+          user: testBlog.user
+        } : null
       }
     });
   } catch (error) {
