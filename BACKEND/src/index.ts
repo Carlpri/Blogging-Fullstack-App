@@ -11,9 +11,14 @@ const app = express();
 
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.FRONTEND_URL || 'https://your-frontend-domain.com']
+    ? [
+        process.env.FRONTEND_URL || 'https://blogging-fullstack-app.vercel.app',
+        'https://blogging-fullstack-app.vercel.app'
+      ]
     : ["http://localhost:5173", "http://localhost:5174"],
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 }));
 app.use(express.json());
 
