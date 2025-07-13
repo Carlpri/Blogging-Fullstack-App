@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "preinstall": "npx npm-force-resolutions"
+    "preinstall": "npx npm-force-resolutions",
+    "build:prod": "tsc -b && vite build --mode production"
   },
   "resolutions": {
     "@mui/material": "7.2.0"

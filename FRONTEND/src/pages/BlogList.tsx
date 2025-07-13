@@ -36,7 +36,7 @@ const BlogList = () => {
     const fetchBlogs = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5678/api/blogs", {
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/blogs`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -71,7 +71,7 @@ const BlogList = () => {
   const handleDeleteBlog = async (blogId: string) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5678/api/blogs/${blogId}`, {
+              await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/blogs/${blogId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -97,7 +97,71 @@ const BlogList = () => {
         borderRadius: "10px",
       }}
     >
-      <ProfileMenu />
+      {/* Fixed Header */}
+      <Box
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
+          backgroundColor: "rgba(0, 0, 0, 0.8)",
+          backdropFilter: "blur(10px)",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+          padding: { xs: "8px 12px", sm: "10px 20px" },
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: { xs: 1, sm: 2 },
+        }}
+      >
+        {/* Write Stack Title */}
+        <Typography 
+          variant="h4" 
+          sx={{
+            color: "white",
+            fontWeight: "bold",
+            fontFamily: "Fjalla One",
+            letterSpacing: { xs: "1px", sm: "3px" },
+            wordSpacing: { xs: "4px", sm: "8px" },
+            textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
+            flexShrink: 0,
+            fontSize: { xs: "1.5rem", sm: "2.125rem" },
+          }}
+        >
+          WRITE STACK
+        </Typography>
+
+        {/* Create Blog Button */}
+        <MuiButton
+          variant="contained"
+          color="primary"
+          onClick={handleCreateBlog}
+          sx={{
+            padding: { xs: "6px 12px", sm: "8px 16px" },
+            fontSize: { xs: "12px", sm: "14px" },
+            fontWeight: "bold",
+            backgroundColor: "#1976d2",
+            "&:hover": {
+              backgroundColor: "#1865c0",
+              transform: "translateY(-1px)",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
+            },
+            transition: "all 0.2s ease",
+            flexShrink: 0,
+          }}
+        >
+          Create New Blog
+        </MuiButton>
+
+        {/* Profile Menu */}
+        <Box sx={{ flexShrink: 0 }}>
+          <ProfileMenu />
+        </Box>
+      </Box>
+
+      {/* Background Overlay */}
       <Box
         sx={{
           position: "absolute",
@@ -107,65 +171,24 @@ const BlogList = () => {
           bottom: 0,
           backgroundColor: "rgba(0, 0, 0, 0.2)",
           zIndex: 0,
-
         }}
       />
 
+      {/* Main Content with Top Padding for Fixed Header */}
       <Box 
         sx={{ 
           position: "relative",
           zIndex: 1,
           p: 4,
+          pt: 12, // Add top padding to account for fixed header
         }}
       >
-        <Typography 
-          variant="h3" 
-          align="center" 
-          gutterBottom
-          sx={{
-            color: "white",
-            fontWeight: "bold",
-            marginBottom: "0px",
-            fontFamily: "Fjalla One",
-            letterSpacing: "5px",
-            wordSpacing: "12px",
-            backgroundColor: "rgba(0, 0, 0, 0.6)",
-            padding: "5px",
-            borderRadius: "10px",
-            marginTop: "10px",
-            marginLeft: "-30px",
-            width: "fit-content",
-          }}
-        >
-          WRITE STACK
-        </Typography>
-        
         {loading && <Typography align="center">Loading...</Typography>}
         {error && (
           <Typography color="error" align="center">
             {error}
           </Typography>
         )}
-
-        <Box display="flex" justifyContent="center" mb={3}>
-          <MuiButton
-            variant="contained"
-            color="primary"
-            onClick={handleCreateBlog}
-            sx={{
-              padding: "10px 15px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              backgroundColor: "#1976d2",
-              "&:hover": {
-                backgroundColor: "#1865c0",
-
-              },
-            }}
-          >
-            Create New Blog
-          </MuiButton>
-        </Box>
 
         {!loading && blogs.length === 0 && (
           <Typography align="center"
@@ -213,9 +236,9 @@ const BlogList = () => {
                       height="180"
                       width="100%"
                       image={blog.image.startsWith('http') ? blog.image : 
-                             blog.image.startsWith('/') ? `http://localhost:5678${blog.image}` :
-                             blog.image.includes('uploads') ? `http://localhost:5678/${blog.image.replace(/\\/g, '/')}` :
-                             `http://localhost:5678/uploads/${blog.image}`}
+                                     blog.image.startsWith('/') ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5678'}${blog.image}` :
+        blog.image.includes('uploads') ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5678'}/${blog.image.replace(/\\/g, '/')}` :
+        `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5678'}/uploads/${blog.image}`}
                       alt={blog.title}
                       style={{
                         objectFit: "cover",

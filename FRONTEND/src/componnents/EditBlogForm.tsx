@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { TextField, Button, Typography, Box, Container, Alert } from '@mui/material';
+import { TextField, Button, Typography, Box, Container, Alert, Card, CardMedia } from '@mui/material';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -13,6 +13,9 @@ export const EditBlogForm = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(true);
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [currentImage, setCurrentImage] = useState<string>('');
+    const [previewUrl, setPreviewUrl] = useState<string>('');
     const navigate = useNavigate();
     const { id } = useParams();
     
@@ -20,7 +23,7 @@ export const EditBlogForm = () => {
         const fetchBlog = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get(`http://localhost:5678/api/blogs/${id}`, {
+                const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/blogs/${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -32,6 +35,7 @@ export const EditBlogForm = () => {
                     synopsis: blog.synopsis,
                     image: blog.image
                 });
+                setCurrentImage(blog.image);
             } catch (err:unknown) {
                     console.log(err);
                 setError('Failed to fetch blog');
@@ -40,7 +44,14 @@ export const EditBlogForm = () => {
             }
         };
         fetchBlog();
-    }, [id]);
+        
+        // Cleanup function to revoke object URL
+        return () => {
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    }, [id, previewUrl]);
     
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -50,11 +61,23 @@ export const EditBlogForm = () => {
     const handleSubmit = async () => {
         try {
             const token = localStorage.getItem('token');
+            const formData = new FormData();
+            formData.append('title', form.title);
+            formData.append('content', form.content);
+            formData.append('synopsis', form.synopsis);
+            
+            if (imageFile) {
+                formData.append('image', imageFile);
+            } else if (form.image) {
+                formData.append('image', form.image);
+            }
+            
             console.log('Updating blog with data:', form);
             
-            const response = await axios.patch(`http://localhost:5678/api/blogs/${id}`, form, {
+            const response = await axios.patch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/blogs/${id}`, formData, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
                 }
             });
             
@@ -133,14 +156,98 @@ export const EditBlogForm = () => {
                     onChange={handleChange}
                 />
         
-                <TextField
-                    label="Image URL"
-                    name="image"
-                    fullWidth
-                    margin="normal"
-                    value={form.image}
-                    onChange={handleChange}
-                />
+                {/* Current Image Display */}
+                {currentImage && (
+                    <Box sx={{ mb: 2 }}>
+                        <Typography variant="h6" gutterBottom>
+                            Current Image:
+                        </Typography>
+                        <Card sx={{ maxWidth: 300, mb: 2 }}>
+                            <CardMedia
+                                component="img"
+                                height="200"
+                                image={currentImage.startsWith('http') ? currentImage : 
+                                       currentImage.startsWith('/') ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5678'}${currentImage}` :
+                                       currentImage.includes('uploads') ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5678'}/${currentImage.replace(/\\/g, '/')}` :
+                                       `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5678'}/uploads/${currentImage}`}
+                                alt="Current blog image"
+                                sx={{ objectFit: 'cover' }}
+                                onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                }}
+                            />
+                        </Card>
+                    </Box>
+                )}
+
+                {/* Image Upload Section */}
+                <Box sx={{ mb: 2 }}>
+                    <Typography variant="h6" gutterBottom>
+                        Update Image:
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        Upload a new image or keep the current one
+                    </Typography>
+                    
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={e => {
+                            if (e.target.files && e.target.files[0]) {
+                                const file = e.target.files[0];
+                                setImageFile(file);
+                                // Clear the image URL field when a file is selected
+                                setForm(prev => ({ ...prev, image: '' }));
+                                
+                                // Create preview URL
+                                const url = URL.createObjectURL(file);
+                                setPreviewUrl(url);
+                            }
+                        }}
+                        style={{ 
+                            margin: '8px 0', 
+                            display: 'block',
+                            padding: '8px',
+                            border: '1px solid #ccc',
+                            borderRadius: '4px',
+                            backgroundColor: 'rgba(255, 255, 255, 0.8)'
+                        }}
+                    />
+                    
+                    {/* Preview of selected file */}
+                    {previewUrl && (
+                        <Box sx={{ mt: 2, mb: 2 }}>
+                            <Typography variant="body2" color="text.secondary" gutterBottom>
+                                Preview of new image:
+                            </Typography>
+                            <Card sx={{ maxWidth: 300 }}>
+                                <CardMedia
+                                    component="img"
+                                    height="150"
+                                    image={previewUrl}
+                                    alt="Preview of new image"
+                                    sx={{ objectFit: 'cover' }}
+                                />
+                            </Card>
+                        </Box>
+                    )}
+                    
+                    {/* Or use URL option */}
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 2, mb: 1 }}>
+                        Or enter an image URL:
+                    </Typography>
+                    <TextField
+                        label="Image URL (optional)"
+                        name="image"
+                        fullWidth
+                        margin="normal"
+                        value={form.image}
+                        onChange={handleChange}
+                        placeholder="https://example.com/image.jpg"
+                        helperText="Leave empty to keep current image or upload a new file above"
+                    />
+                </Box>
         
                 <Button
                     variant="contained"

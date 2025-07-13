@@ -40,7 +40,19 @@ router.post(
 router.get("/", getBlogs);
 router.get("/me", verifyToken, getMyBlogs); 
 router.get("/:id", getBlogById);
-router.patch("/:id", verifyToken, validate(blogSchema), updateBlog);
+router.patch(
+  "/:id",
+  verifyToken,
+  upload.single('image'),
+  (req, res, next) => {
+    if (req.file) {
+      req.body.image = `http://localhost:5678/uploads/${req.file.filename}`;
+    }
+    next();
+  },
+  validate(blogSchema),
+  updateBlog
+);
 router.delete("/:id",verifyToken, deleteBlog);
 
 

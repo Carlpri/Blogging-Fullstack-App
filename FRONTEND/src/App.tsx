@@ -7,6 +7,7 @@ import BlogList from "./pages/BlogList";
 import BlogDetail from "./pages/BlogDetail";
 import { EditBlogForm } from "./componnents/EditBlogForm";
 import ChangePasswordForm from "./componnents/ChangePasswordForm";
+import EditProfileForm from "./componnents/EditProfileForm";
 import "./App.css";
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="/blogs/new" element={<CreateBlogForm />} />
           <Route path="/blogs/:id/edit" element={<EditBlogForm />} />
           <Route path="/change-password" element={<ChangePasswordForm />} />
+          <Route path="/edit-profile" element={<EditProfileForm />} />
 
         </Routes>
        

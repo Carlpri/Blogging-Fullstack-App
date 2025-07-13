@@ -34,7 +34,7 @@ export const CreateBlogForm = () => {
                 formData.append('image', imageFile);
             }
 
-            const res = await axios.post('http://localhost:5678/api/blogs/create', formData, {
+            const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/blogs/create`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'

@@ -20,7 +20,7 @@ export const LoginForm = () => {
 
  const handleSubmit = async () => {
     try {
-      const res = await axios.post('http://localhost:5678/api/auth/login', form);
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/auth/login`, form);
       localStorage.setItem('token', res.data.token);
       navigate('/blogs');
     } catch (err: unknown) {

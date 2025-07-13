@@ -9,7 +9,7 @@ import {
   Divider,
   CircularProgress,
 } from '@mui/material';
-import {  Logout, Edit,  Article } from '@mui/icons-material';
+import {  Logout, Edit,  Article, Person } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
@@ -26,7 +26,7 @@ export const ProfileMenu = () => {
 
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5678/api/blogs/me', {
+              const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/blogs/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setBlogCount(response.data.length);
@@ -108,14 +108,16 @@ export const ProfileMenu = () => {
   }
 
   return (
-    <Box sx={{ position: 'absolute', top: 20, right: 20, zIndex: 10 }}>
+    <Box sx={{ position: 'relative' }}>
       <IconButton
         onClick={handleMenuOpen}
         sx={{
           backgroundColor: 'rgba(255, 255, 255, 0.9)',
           '&:hover': {
             backgroundColor: 'rgba(255, 255, 255, 1)',
+            transform: 'scale(1.05)',
           },
+          transition: 'all 0.2s ease',
         }}
       >
         <Avatar
@@ -179,6 +181,11 @@ export const ProfileMenu = () => {
         </Box>
 
         <Divider />
+
+        <MenuItem onClick={() => { navigate('/edit-profile'); handleMenuClose(); }} sx={{ py: 1.5 }}>
+          <Person sx={{ mr: 2, color: '#666' }} />
+          <Typography>Edit Profile</Typography>
+        </MenuItem>
 
         <MenuItem onClick={handleChangePassword} sx={{ py: 1.5 }}>
           <Edit sx={{ mr: 2, color: '#666' }} />

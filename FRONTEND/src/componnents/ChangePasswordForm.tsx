@@ -59,7 +59,7 @@ export const ChangePasswordForm = () => {
       }
 
       const response = await axios.post(
-        'http://localhost:5678/api/auth/change-password',
+        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/auth/change-password`,
         {
           currentPassword: form.currentPassword,
           newPassword: form.newPassword,

@@ -13,7 +13,7 @@ import { verifyToken } from "../middlewares/verifyToken";
 const router: Router = Router();
 
 router.post("/register", validate(registerSchema), checkUserExist, register);
-router.patch("/update", validate(updateUserSchema), updateUser);
+router.patch("/update", verifyToken, validate(updateUserSchema), updateUser);
 router.post("/login",login);
 router.post("/change-password", verifyToken, validate(changePasswordSchema), changePassword);
 

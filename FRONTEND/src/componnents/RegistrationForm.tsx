@@ -22,7 +22,7 @@ const RegisterForm = () => {
 
   const handleSubmit = async () => {
     try {
-      await axios.post('http://localhost:5678/api/auth/register', form);
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/auth/register`, form);
       setSuccess('Registration successful. You can now login.');
       setError('');
       setTimeout(() => navigate('/login'), 2000);

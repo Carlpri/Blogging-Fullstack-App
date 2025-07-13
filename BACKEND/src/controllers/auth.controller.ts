@@ -46,7 +46,8 @@ export const updateUser = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { userId, username, password } = req.body;
+  const { firstName, lastName, emailAddress, username, password } = req.body;
+  const userId = (req as any).user?.id; // From verifyToken middleware
 
   try {
     const existingUser = await prisma.user.findUnique({
@@ -58,9 +59,19 @@ export const updateUser = async (
       return;
     }
 
+    // Check if email is being changed and if it's already taken
+    if (emailAddress && emailAddress !== existingUser.emailAddress) {
+      const emailTaken = await prisma.user.findUnique({ where: { emailAddress } });
+      if (emailTaken) {
+        res.status(409).json({ message: "Email address already in use" });
+        return;
+      }
+    }
+
+    // Check if username is being changed and if it's already taken
     if (username && username !== existingUser.username) {
-      const taken = await prisma.user.findUnique({ where: { username } });
-      if (taken) {
+      const usernameTaken = await prisma.user.findUnique({ where: { username } });
+      if (usernameTaken) {
         res.status(409).json({ message: "Username already being used" });
         return;
       }
@@ -69,16 +80,41 @@ export const updateUser = async (
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: {
+        firstName: firstName || existingUser.firstName,
+        lastName: lastName || existingUser.lastName,
+        emailAddress: emailAddress || existingUser.emailAddress,
         username: username || existingUser.username,
         password: password
           ? await bcrypt.hash(password, 10)
           : existingUser.password,
       },
     });
-    res
-      .status(200)
-      .json({ message: "User updated successfully", user: updatedUser });
+
+    // Generate new JWT token with updated user info
+    const newToken = jwt.sign(
+      { 
+        userId: updatedUser.id, 
+        firstName: updatedUser.firstName, 
+        lastName: updatedUser.lastName,
+        emailAddress: updatedUser.emailAddress,
+        username: updatedUser.username 
+      },
+      process.env.JWT_SECRET!
+    );
+
+    res.status(200).json({ 
+      message: "User updated successfully", 
+      user: {
+        id: updatedUser.id,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        emailAddress: updatedUser.emailAddress,
+        username: updatedUser.username,
+      },
+      token: newToken
+    });
   } catch (e) {
+    console.error('Error updating user:', e);
     res.status(500).json({ message: "Updating user failed" });
   }
 };

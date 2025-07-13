@@ -55,7 +55,7 @@ export const BlogDetail = () => {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const response = await axios.get(`http://localhost:5678/api/blogs/${id}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/blogs/${id}`);
         console.log('Blog data received:', response.data);
         console.log('Date fields:', {
           dateCreated: response.data.dateCreated,
@@ -85,7 +85,7 @@ export const BlogDetail = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5678/api/blogs/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/blogs/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       navigate('/blogs');
