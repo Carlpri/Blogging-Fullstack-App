@@ -68,7 +68,6 @@ export const EditProfileForm = () => {
       ...prev,
       [field]: event.target.value
     }));
-    // Clear any previous error/success messages
     setError('');
     setSuccess('');
   };
@@ -76,7 +75,6 @@ export const EditProfileForm = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     
-    // No need to check currentUserId since it's extracted from token
 
     setLoading(true);
     setError('');
@@ -92,14 +90,12 @@ export const EditProfileForm = () => {
         }
       );
 
-      // Update the token in localStorage with the new user info
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
       }
 
       setSuccess('Profile updated successfully!');
       
-      // Redirect back to blogs after a short delay
       setTimeout(() => {
         navigate('/blogs');
       }, 2000);

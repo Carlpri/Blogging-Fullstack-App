@@ -45,10 +45,10 @@ export const createBlog = async (req: AuthenticatedRequest, res: Response): Prom
 export const getBlogs = async (_req: Request, res: Response): Promise<void> => {
   try {
     const blogs = await prisma.blog.findMany({
-      where: { isDeleted: false }, // Only show non-deleted blogs
+      where: { isDeleted: false }, 
       include: {user: true},
       orderBy: {
-        dateCreated: 'desc' // Latest created blogs to appear first
+        dateCreated: 'desc'
       }
     });
 

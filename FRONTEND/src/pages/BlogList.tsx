@@ -116,7 +116,6 @@ const BlogList = () => {
           gap: { xs: 1, sm: 2 },
         }}
       >
-        {/* Write Stack Title */}
         <Typography 
           variant="h4" 
           sx={{
@@ -132,8 +131,6 @@ const BlogList = () => {
         >
           WRITE STACK
         </Typography>
-
-        {/* Create Blog Button */}
         <MuiButton
           variant="contained"
           color="primary"
@@ -155,13 +152,10 @@ const BlogList = () => {
           Create New Blog
         </MuiButton>
 
-        {/* Profile Menu */}
         <Box sx={{ flexShrink: 0 }}>
           <ProfileMenu />
         </Box>
       </Box>
-
-      {/* Background Overlay */}
       <Box
         sx={{
           position: "absolute",
@@ -174,13 +168,12 @@ const BlogList = () => {
         }}
       />
 
-      {/* Main Content with Top Padding for Fixed Header */}
       <Box 
         sx={{ 
           position: "relative",
           zIndex: 1,
           p: 4,
-          pt: 12, // Add top padding to account for fixed header
+          pt: 12, 
         }}
       >
         {loading && <Typography align="center">Loading...</Typography>}

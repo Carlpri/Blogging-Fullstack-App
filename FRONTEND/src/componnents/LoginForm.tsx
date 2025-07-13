@@ -58,8 +58,6 @@ export const LoginForm = () => {
           zIndex: 0,
         }}
       />
-
-      {/* Content */}
       <Container 
         maxWidth="sm"
         sx={{

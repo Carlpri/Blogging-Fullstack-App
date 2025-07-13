@@ -7,7 +7,8 @@
     "start:dev": "nodemon src/index.ts",
     "build": "tsc",
     "start:prod": "node dist/index.js",
-    "format": "prettier --write * "
+    "format": "prettier --write * ",
+    "postinstall": "npx prisma generate"
   },
   "keywords": [],
   "author": "",

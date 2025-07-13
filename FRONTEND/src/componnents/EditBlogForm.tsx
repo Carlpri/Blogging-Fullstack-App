@@ -45,7 +45,6 @@ export const EditBlogForm = () => {
         };
         fetchBlog();
         
-        // Cleanup function to revoke object URL
         return () => {
             if (previewUrl) {
                 URL.revokeObjectURL(previewUrl);
@@ -84,7 +83,6 @@ export const EditBlogForm = () => {
             console.log('Blog updated successfully:', response.data);
             setSuccess('Blog updated successfully!');
             setError('');
-            // Navigate after a short delay to show success message
             setTimeout(() => {
                 navigate('/blogs');
             }, 1500);
@@ -156,7 +154,6 @@ export const EditBlogForm = () => {
                     onChange={handleChange}
                 />
         
-                {/* Current Image Display */}
                 {currentImage && (
                     <Box sx={{ mb: 2 }}>
                         <Typography variant="h6" gutterBottom>
@@ -181,7 +178,6 @@ export const EditBlogForm = () => {
                     </Box>
                 )}
 
-                {/* Image Upload Section */}
                 <Box sx={{ mb: 2 }}>
                     <Typography variant="h6" gutterBottom>
                         Update Image:
@@ -197,10 +193,8 @@ export const EditBlogForm = () => {
                             if (e.target.files && e.target.files[0]) {
                                 const file = e.target.files[0];
                                 setImageFile(file);
-                                // Clear the image URL field when a file is selected
                                 setForm(prev => ({ ...prev, image: '' }));
                                 
-                                // Create preview URL
                                 const url = URL.createObjectURL(file);
                                 setPreviewUrl(url);
                             }
@@ -215,7 +209,6 @@ export const EditBlogForm = () => {
                         }}
                     />
                     
-                    {/* Preview of selected file */}
                     {previewUrl && (
                         <Box sx={{ mt: 2, mb: 2 }}>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -233,7 +226,6 @@ export const EditBlogForm = () => {
                         </Box>
                     )}
                     
-                    {/* Or use URL option */}
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 2, mb: 1 }}>
                         Or enter an image URL:
                     </Typography>

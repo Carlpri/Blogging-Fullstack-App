@@ -47,7 +47,7 @@ export const updateUser = async (
   res: Response
 ): Promise<void> => {
   const { firstName, lastName, emailAddress, username, password } = req.body;
-  const userId = (req as any).user?.id; // From verifyToken middleware
+  const userId = (req as any).user?.id; 
 
   try {
     const existingUser = await prisma.user.findUnique({
@@ -59,7 +59,6 @@ export const updateUser = async (
       return;
     }
 
-    // Check if email is being changed and if it's already taken
     if (emailAddress && emailAddress !== existingUser.emailAddress) {
       const emailTaken = await prisma.user.findUnique({ where: { emailAddress } });
       if (emailTaken) {
@@ -68,7 +67,6 @@ export const updateUser = async (
       }
     }
 
-    // Check if username is being changed and if it's already taken
     if (username && username !== existingUser.username) {
       const usernameTaken = await prisma.user.findUnique({ where: { username } });
       if (usernameTaken) {
@@ -89,8 +87,6 @@ export const updateUser = async (
           : existingUser.password,
       },
     });
-
-    // Generate new JWT token with updated user info
     const newToken = jwt.sign(
       { 
         userId: updatedUser.id, 
@@ -124,8 +120,7 @@ export const changePassword = async (
 ): Promise<void> => {
   try {
     const { currentPassword, newPassword } = req.body;
-    const userId = (req as any).user?.id; // From verifyToken middleware
-    
+    const userId = (req as any).user?.id; 
     console.log('Change password request:', { userId, hasCurrentPassword: !!currentPassword, hasNewPassword: !!newPassword });
 
     if (!userId) {
@@ -142,17 +137,13 @@ export const changePassword = async (
       return;
     }
 
-    // Users must first Verify their current password
     const isCurrentPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
     if (!isCurrentPasswordCorrect) {
       res.status(400).json({ message: "Current password is incorrect" });
       return;
     }
-
-    //To  Hash new password
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
-    // Update the password
     await prisma.user.update({
       where: { id: userId },
       data: { password: hashedNewPassword },
