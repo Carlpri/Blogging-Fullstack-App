@@ -74,4 +74,21 @@ router.get("/db-test", async (req, res) => {
   }
 });
 
+// Simple connection test
+router.get("/connection-test", async (req, res) => {
+  try {
+    await prisma.$connect();
+    res.status(200).json({
+      message: "Database connection successful",
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error("Connection test failed:", error);
+    res.status(500).json({
+      message: "Database connection failed",
+      error: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
+});
+
 export default router; 
