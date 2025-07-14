@@ -148,6 +148,8 @@ model Blog {
 
 ## 🔧 API Endpoints
 
+All API endpoints are prefixed with `/api`:
+
 ### Authentication Routes
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
@@ -160,6 +162,7 @@ model Blog {
 - `POST /api/blogs/create` - Create new blog (with image upload)
 - `PATCH /api/blogs/:id` - Update blog (with image upload)
 - `DELETE /api/blogs/:id` - Delete blog
+- `GET /api/blogs/me` - Get blogs for the logged-in user
 
 ## 🎯 Key Features Implementation
 
@@ -229,8 +232,19 @@ model Blog {
    ```
 
 4. **Access the Application**
-   - Frontend: coming soon...
-   - Backend API: coming soon...
+   - Frontend: [https://blogging-fullstack-app-umnu.vercel.app](https://blogging-fullstack-app-umnu.vercel.app)
+   - Backend API: [https://blogging-fullstack-app-1.onrender.com/api/health](https://blogging-fullstack-app-1.onrender.com/api/health)
+
+## 🌐 Environment Variables
+
+### Backend (`BACKEND/.env`)
+- See `BACKEND/env.example` for required variables (e.g., `JWT_SECRET`, `DATABASE_URL`).
+
+### Frontend (`FRONTEND/.env`)
+```
+VITE_API_URL=https://blogging-fullstack-app-1.onrender.com
+```
+- On Vercel, set `VITE_API_URL` in your project settings.
 
 ## 🔒 Security Features
 
@@ -288,5 +302,3 @@ The application is fully responsive and works on:
 For support and questions, please contact mdahanacarlos@gmail.com.
 
 ---
-
-**© WriteStack 2025. All rights reserved.**

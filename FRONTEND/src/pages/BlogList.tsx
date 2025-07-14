@@ -36,7 +36,7 @@ const BlogList = () => {
     const fetchBlogs = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await api.get('/blogs', {
+        const response = await api.get('/api/blogs', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -71,7 +71,7 @@ const BlogList = () => {
   const handleDeleteBlog = async (blogId: string) => {
     try {
       const token = localStorage.getItem("token");
-      await api.delete(`/blogs/${blogId}`, {
+      await api.delete(`/api/blogs/${blogId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -26,7 +26,7 @@ export const ProfileMenu = () => {
 
     try {
       setLoading(true);
-      const response = await api.get('/blogs/me', {
+      const response = await api.get('/api/blogs/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setBlogCount(response.data.length);

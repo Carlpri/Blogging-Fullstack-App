@@ -26,7 +26,7 @@ export const CreateBlogForm = () => {
     const handleSubmit = async () => {
         setError('');
         try {
-            const response = await api.post('/blogs/create', form, {
+            const response = await api.post('/api/blogs/create', form, {
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem('token')}`
                 }
