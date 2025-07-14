@@ -97,7 +97,6 @@ const BlogList = () => {
         borderRadius: "10px",
       }}
     >
-      {/* Fixed Header */}
       <Box
         sx={{
           position: "fixed",
@@ -129,7 +128,7 @@ const BlogList = () => {
             fontSize: { xs: "1.5rem", sm: "2.125rem" },
           }}
         >
-          WRITE STACK
+          BLOGIT
         </Typography>
         <MuiButton
           variant="contained"
@@ -149,7 +148,7 @@ const BlogList = () => {
             flexShrink: 0,
           }}
         >
-          Create New Blog
+          Create your new Blog
         </MuiButton>
 
         <Box sx={{ flexShrink: 0 }}>
@@ -191,7 +190,7 @@ const BlogList = () => {
             marginBottom: "15px",
           }}
           >
-            No blogs found. Click the button above to create a new blog.
+            No blogs found! Click the button above to create a new blog.
           </Typography>
         )}
 
@@ -206,7 +205,7 @@ const BlogList = () => {
               textDecoration: "underline",
             }}
           >
-            All Blogs
+            Blogs
           </Typography>
           <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
             {blogs.map((blog) => (

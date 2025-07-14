@@ -29,7 +29,7 @@ function App() {
        
       </Router>
       <footer className="footer" style={{ marginTop: "-10px", marginBottom: "-30px",paddingTop: "0px",paddingBottom: "0px", textAlign: "center" }}>
-        <p>©WriteStack 2025. All rights reserved.</p>
+        <p>©Blogit 2025. All rights reserved.</p>
       </footer>
     </>
   );
