@@ -165,9 +165,9 @@ export const EditBlogForm = () => {
                                 component="img"
                                 height="200"
                                 image={currentImage.startsWith('http') ? currentImage : 
-                                       currentImage.startsWith('/') ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5678'}${currentImage}` :
-                                       currentImage.includes('uploads') ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5678'}/${currentImage.replace(/\\/g, '/')}` :
-                                       `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5678'}/uploads/${currentImage}`}
+                                       currentImage.startsWith('/') ? `http://localhost:5678${currentImage}` :
+                                       currentImage.includes('uploads') ? `http://localhost:5678/${currentImage.replace(/\\/g, '/')}` :
+                                       `http://localhost:5678/uploads/${currentImage}`}
                                 alt="Current blog image"
                                 sx={{ objectFit: 'cover' }}
                                 onError={(e) => {

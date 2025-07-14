@@ -1,8 +1,8 @@
 // USER CAN VIEW CREATED BLOGS AND SEE A BUTTON TO CREATE A NEW BLOG POST
 
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { api } from "../services/api";
 import {
   Card,
   CardContent,
@@ -36,7 +36,7 @@ const BlogList = () => {
     const fetchBlogs = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/blogs`, {
+        const response = await api.get('/blogs', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -71,7 +71,7 @@ const BlogList = () => {
   const handleDeleteBlog = async (blogId: string) => {
     try {
       const token = localStorage.getItem("token");
-              await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/blogs/${blogId}`, {
+      await api.delete(`/blogs/${blogId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -229,9 +229,9 @@ const BlogList = () => {
                       height="180"
                       width="100%"
                       image={blog.image.startsWith('http') ? blog.image : 
-                                     blog.image.startsWith('/') ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5678'}${blog.image}` :
-        blog.image.includes('uploads') ? `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5678'}/${blog.image.replace(/\\/g, '/')}` :
-        `${import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5678'}/uploads/${blog.image}`}
+                                     blog.image.startsWith('/') ? `http://localhost:5678${blog.image}` :
+        blog.image.includes('uploads') ? `http://localhost:5678/${blog.image.replace(/\\/g, '/')}` :
+        `http://localhost:5678/uploads/${blog.image}`}
                       alt={blog.title}
                       style={{
                         objectFit: "cover",

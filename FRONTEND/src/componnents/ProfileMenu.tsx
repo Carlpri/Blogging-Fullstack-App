@@ -12,7 +12,7 @@ import {
 import {  Logout, Edit,  Article, Person } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
+import { api } from '../services/api';
 
 export const ProfileMenu = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -26,7 +26,7 @@ export const ProfileMenu = () => {
 
     try {
       setLoading(true);
-              const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5678/api'}/blogs/me`, {
+      const response = await api.get('/blogs/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setBlogCount(response.data.length);
