@@ -3,9 +3,11 @@ import { useState } from 'react';
 import { TextField, Button, Typography, Box, Container, Alert } from '@mui/material';
 import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
+import { presetName, CLOUDINARY_URL } from './Cloudinary.tsx'; 
 
 export const CreateBlogForm = () => {
+
     const [form, setForm] = useState({
         title: '',
         content: '',
@@ -15,7 +17,6 @@ export const CreateBlogForm = () => {
     });
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const [imageFile, setImageFile] = useState<File | null>(null);
     
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -23,34 +24,43 @@ export const CreateBlogForm = () => {
     };
     
     const handleSubmit = async () => {
+        setError('');
         try {
-            const token = localStorage.getItem('token');
-            const formData = new FormData();
-            formData.append('title', form.title);
-            formData.append('content', form.content);
-            formData.append('synopsis', form.synopsis);
-            formData.append('tags', form.tags);
-            if (imageFile) {
-                formData.append('image', imageFile);
-            }
-
-            const res = await api.post('/blogs/create', formData, {
+            const response = await api.post('/blogs/create', form, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
+                    "Authorization": `Bearer ${localStorage.getItem('token')}`
                 }
             });
-            if (res.status === 201) {
-                setForm({
-                    title: '',
-                    content: '',
-                    synopsis: '',
-                    image: '',
-                    tags: ''
-                });
-                setError('');
+            if (response.status === 201) {
+                navigate('/blogs');
             }
-            navigate('/blogs');
+        } catch (err: unknown) {
+            if (err && typeof err === 'object' && 'response' in err) {
+                const axiosError = err as { response?: { data?: { message?: string } } };
+                setError(axiosError.response?.data?.message || 'Failed to create blog post');
+            } else {
+                setError('Unexpected Error occurred');
+            }
+        }
+    }
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) {
+            setError('Please select an image file');
+            return;
+        }
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', presetName);
+
+            const res = await axios.post(CLOUDINARY_URL, formData);
+            console.log(res.data)
+
+            const imageUrl = res.data.secure_url;
+            setForm(prev => ({ ...prev, image: imageUrl }));
+
         } catch (err: unknown) {
             if (err && typeof err === 'object' && 'response' in err) {
                 const axiosError = err as { response?: { data?: { message?: string } } };
@@ -97,16 +107,12 @@ export const CreateBlogForm = () => {
                     onChange={handleChange}
                 />
         
-        <input
-  type="file"
-  accept="image/*"
-  onChange={e => {
-    if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0]);
-    }
-  }}
-  style={{ margin: '16px 0', display: 'block' }}
-/>
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    style={{ margin: '16px 0', display: 'block' }}
+                />
         
                 <TextField
                     label="Tags (comma separated)"

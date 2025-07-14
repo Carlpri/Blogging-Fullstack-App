@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { TextField, Button, Typography, Box, Container, Alert, Card, CardMedia } from '@mui/material';
 import { api } from '../services/api';
 import { useNavigate, useParams } from 'react-router-dom';
+import {presetName, CLOUDINARY_URL} from './Cloudinary.tsx';
+import axios from 'axios';
 
 export const EditBlogForm = () => {
     const [form, setForm] = useState({
@@ -13,9 +15,9 @@ export const EditBlogForm = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(true);
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [currentImage, setCurrentImage] = useState<string>('');
-    const [previewUrl, setPreviewUrl] = useState<string>('');
+    const [currentImage, setCurrentImage] = useState('');
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
     const navigate = useNavigate();
     const { id } = useParams();
     
@@ -37,7 +39,7 @@ export const EditBlogForm = () => {
                 });
                 setCurrentImage(blog.image);
             } catch (err:unknown) {
-                    console.log(err);
+                console.log(err);
                 setError('Failed to fetch blog');
             } finally {
                 setLoading(false);
@@ -45,42 +47,66 @@ export const EditBlogForm = () => {
         };
         fetchBlog();
         
+    }, [id]);
+
+    useEffect(() => {
         return () => {
             if (previewUrl) {
                 URL.revokeObjectURL(previewUrl);
             }
         };
-    }, [id, previewUrl]);
+    }, [previewUrl]);
     
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setForm({ ...form, [name]: value });
+        if (name === 'image') {
+            setPreviewUrl(null);
+        }
     };
-    
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) {
+            setError('Please select an image file');
+            return;
+        }
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
+        setForm(prev => ({ ...prev, image: '' })); 
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', presetName);
+
+            const res = await axios.post(CLOUDINARY_URL, formData);
+            const imageUrl = res.data.secure_url;
+            setForm(prev => ({ ...prev, image: imageUrl }));
+        } catch (err: unknown) {
+            if (err && typeof err === 'object' && 'response' in err) {
+                const axiosError = err as { response?: { data?: { message?: string } } };
+                setError(axiosError.response?.data?.message || 'Failed to upload image');
+            } else {
+                setError('Unexpected Error occurred');
+            }
+        }
+    };
+
     const handleSubmit = async () => {
         try {
             const token = localStorage.getItem('token');
-            const formData = new FormData();
-            formData.append('title', form.title);
-            formData.append('content', form.content);
-            formData.append('synopsis', form.synopsis);
-            
-            if (imageFile) {
-                formData.append('image', imageFile);
-            } else if (form.image) {
-                formData.append('image', form.image);
-            }
-            
-            console.log('Updating blog with data:', form);
-            
-            const response = await api.patch(`/blogs/${id}`, formData, {
+            await api.patch(`/blogs/${id}`, {
+                title: form.title,
+                content: form.content,
+                synopsis: form.synopsis,
+                image: form.image || currentImage,
+            }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'application/json'
                 }
             });
-            
-            console.log('Blog updated successfully:', response.data);
             setSuccess('Blog updated successfully!');
             setError('');
             setTimeout(() => {
@@ -96,9 +122,9 @@ export const EditBlogForm = () => {
             }
         }
     };
-    
+
     if (loading) return <Typography>Loading...</Typography>;
-    
+
     return (
         <Box
             sx={{
@@ -122,10 +148,8 @@ export const EditBlogForm = () => {
                     }}
                 >
                 <Typography variant="h4" align="center" gutterBottom>Edit Blog Post</Typography>
-                
                 {error && <Alert severity="error">{error}</Alert>}
                 {success && <Alert severity="success">{success}</Alert>}
-        
                 <TextField
                     label="Title"
                     name="title"
@@ -134,7 +158,6 @@ export const EditBlogForm = () => {
                     value={form.title}
                     onChange={handleChange}
                 />
-        
                 <TextField
                     label="Content"
                     name="content"
@@ -145,7 +168,6 @@ export const EditBlogForm = () => {
                     value={form.content}
                     onChange={handleChange}
                 />
-        
                 <TextField
                     label="Synopsis"
                     name="synopsis"
@@ -154,8 +176,7 @@ export const EditBlogForm = () => {
                     value={form.synopsis}
                     onChange={handleChange}
                 />
-        
-                {currentImage && (
+                {currentImage && !previewUrl && (
                     <Box sx={{ mb: 2 }}>
                         <Typography variant="h6" gutterBottom>
                             Current Image:
@@ -178,7 +199,6 @@ export const EditBlogForm = () => {
                         </Card>
                     </Box>
                 )}
-
                 <Box sx={{ mb: 2 }}>
                     <Typography variant="h6" gutterBottom>
                         Update Image:
@@ -186,20 +206,10 @@ export const EditBlogForm = () => {
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                         Upload a new image or keep the current one
                     </Typography>
-                    
                     <input
                         type="file"
                         accept="image/*"
-                        onChange={e => {
-                            if (e.target.files && e.target.files[0]) {
-                                const file = e.target.files[0];
-                                setImageFile(file);
-                                setForm(prev => ({ ...prev, image: '' }));
-                                
-                                const url = URL.createObjectURL(file);
-                                setPreviewUrl(url);
-                            }
-                        }}
+                        onChange={handleFileUpload}
                         style={{ 
                             margin: '8px 0', 
                             display: 'block',
@@ -209,7 +219,6 @@ export const EditBlogForm = () => {
                             backgroundColor: 'rgba(255, 255, 255, 0.8)'
                         }}
                     />
-                    
                     {previewUrl && (
                         <Box sx={{ mt: 2, mb: 2 }}>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -226,7 +235,6 @@ export const EditBlogForm = () => {
                             </Card>
                         </Box>
                     )}
-                    
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 2, mb: 1 }}>
                         Or enter an image URL:
                     </Typography>
@@ -241,7 +249,6 @@ export const EditBlogForm = () => {
                         helperText="Leave empty to keep current image or upload a new file above"
                     />
                 </Box>
-        
                 <Button
                     variant="contained"
                     fullWidth

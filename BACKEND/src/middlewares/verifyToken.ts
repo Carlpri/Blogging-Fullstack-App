@@ -27,7 +27,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction): vo
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
-    req.user = { id: decoded.userId };
+    req.user = { id: decoded.userId, ...decoded };
     next();
   } catch (err) {
     res.status(401).json({ message: 'Invalid or expired token' });

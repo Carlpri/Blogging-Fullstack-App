@@ -46,13 +46,13 @@ export const createBlog = async (req: Request, res: Response): Promise<void> => 
       }
     });
 
-    console.log('Created blog:', newBlog);
+    // console.log('Created blog:', newBlog);
     res.status(201).json(newBlog);
   } catch (error) {
     console.error("CREATE BLOG ERROR",error);
     res.status(500).json({ message: "Error creating blog", error });
   }
-  console.log ("USER:",req.user);
+  // console.log ("USER:",req.user);
 };
 
 export const getBlogs = async (_req: Request, res: Response): Promise<void> => {
@@ -91,12 +91,12 @@ export const getBlogById = async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
-    console.log('Blog being returned:', {
-      id: blog.id,
-      title: blog.title,
-      dateCreated: blog.dateCreated,
-      lastUpdated: blog.lastUpdated
-    });
+    // console.log('Blog being returned:', {
+    //   id: blog.id,
+    //   title: blog.title,
+    //   dateCreated: blog.dateCreated,
+    //   lastUpdated: blog.lastUpdated
+    // });
 
     res.status(200).json(blog);
   } catch (error) {
@@ -132,14 +132,17 @@ export const updateBlog = async (req: Request, res: Response): Promise<void> => 
   const { title, content, synopsis, image } = req.body;
   const userId = req.user?.id;
 
+  // console.log('req.user:', req.user);
+
+  const blog = await prisma.blog.findUnique({ where: { id } });
+  // console.log('blog:', blog);
+
+  if (!blog || blog.userId !== userId) {
+    res.status(403).json({ message: 'Kindly log in to update this blog' });
+    return;
+  }
+
   try {
-
-    const blog = await prisma.blog.findUnique({ where: { id } });
-
-    if (!blog || blog.userId !== userId) {
-      res.status(403).json({ message: 'Kindly log in to update this blog' });
-      return;
-    }
 
     const updatedBlog = await prisma.blog.update({
       where: { id },
@@ -152,7 +155,7 @@ export const updateBlog = async (req: Request, res: Response): Promise<void> => 
       },
     });
 
-    console.log('Updated blog:', updatedBlog);
+    // console.log('Updated blog:', updatedBlog);
     res.status(200).json(updatedBlog);
   } catch (error) {
     console.error('Error updating blog:', error);

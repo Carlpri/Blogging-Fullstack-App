@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/LoginForm.tsx
 import { useState } from 'react';
 import { TextField, Button, Typography, Box, Container, Alert, InputAdornment, IconButton } from '@mui/material';
@@ -23,13 +24,14 @@ export const LoginForm = () => {
       const res = await api.post('/auth/login', form);
       localStorage.setItem('token', res.data.token);
       navigate('/blogs');
-    } catch (err: unknown) {
-        if (err && typeof err === 'object' && 'response' in err) {
-            const axiosError = err as any;
-            setError(axiosError.response?.data?.message || 'Login failed');
-        } else {
-      setError('Unexpected Error occurred');
-        }
+    } catch (err:any) {
+      //   if (err && typeof err === 'object' && 'response' in err) {
+      //       const axiosError = err;
+      //       setError(axiosError.response?.data?.message || 'Login failed');
+      //   } else {
+      // setError('Unexpected Error occurred');
+      //   }
+      setError(err)
     }
   };
 
