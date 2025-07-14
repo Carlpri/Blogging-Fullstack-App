@@ -228,9 +228,9 @@ const BlogList = () => {
                       height="180"
                       width="100%"
                       image={blog.image.startsWith('http') ? blog.image : 
-                                     blog.image.startsWith('/') ? `http://localhost:5678${blog.image}` :
-        blog.image.includes('uploads') ? `http://localhost:5678/${blog.image.replace(/\\/g, '/')}` :
-        `http://localhost:5678/uploads/${blog.image}`}
+                                     blog.image.startsWith('/') ? `${import.meta.env.VITE_API_URL}${blog.image}` :
+        blog.image.includes('uploads') ? `${import.meta.env.VITE_API_URL}/${blog.image.replace(/\\/g, '/')}` :
+        `${import.meta.env.VITE_API_URL}/uploads/${blog.image}`}
                       alt={blog.title}
                       style={{
                         objectFit: "cover",
