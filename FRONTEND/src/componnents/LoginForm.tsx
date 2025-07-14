@@ -21,7 +21,7 @@ export const LoginForm = () => {
 
  const handleSubmit = async () => {
     try {
-      const res = await api.post('/auth/login', form);
+      const res = await api.post('api/auth/login', form);
       localStorage.setItem('token', res.data.token);
       navigate('/blogs');
     } catch (err:any) {

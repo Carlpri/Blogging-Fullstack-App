@@ -83,7 +83,7 @@ export const EditProfileForm = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await api.patch(
-        '/auth/update',
+        'api/auth/update',
         formData,
         {
           headers: { Authorization: `Bearer ${token}` }

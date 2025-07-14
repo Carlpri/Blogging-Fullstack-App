@@ -22,7 +22,7 @@ const RegisterForm = () => {
 
   const handleSubmit = async () => {
     try {
-      await api.post('/auth/register', form);
+      await api.post('api/auth/register', form);
       setSuccess('Registration successful. You can now login.');
       setError('');
       setTimeout(() => navigate('/login'), 2000);
