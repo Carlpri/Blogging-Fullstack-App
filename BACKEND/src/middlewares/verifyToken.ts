@@ -1,6 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        firstName?: string;
+        lastName?: string;
+        emailAddress?: string;
+        username?: string;
+      };
+    }
+  }
+}
+
 export const verifyToken = (req: Request, res: Response, next: NextFunction): void => {
   const authHeader = req.headers.authorization;
 

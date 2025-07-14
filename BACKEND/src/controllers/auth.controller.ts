@@ -3,6 +3,20 @@ import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        firstName?: string;
+        lastName?: string;
+        emailAddress?: string;
+        username?: string;
+      };
+    }
+  }
+}
+
 
 const prisma = new PrismaClient();
 
@@ -51,7 +65,7 @@ export const updateUser = async (
   res: Response
 ): Promise<void> => {
   const { firstName, lastName, emailAddress, username, password } = req.body;
-  const userId = (req as any).user?.id; 
+  const userId = req.user?.id; 
 
   try {
     const existingUser = await prisma.user.findUnique({
@@ -124,7 +138,7 @@ export const changePassword = async (
 ): Promise<void> => {
   try {
     const { currentPassword, newPassword } = req.body;
-    const userId = (req as any).user?.id; 
+    const userId = req.user?.id; 
     console.log('Change password request:', { userId, hasCurrentPassword: !!currentPassword, hasNewPassword: !!newPassword });
 
     if (!userId) {

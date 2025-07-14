@@ -2,6 +2,20 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        firstName?: string;
+        lastName?: string;
+        emailAddress?: string;
+        username?: string;
+      };
+    }
+  }
+}
+
 
  
 const prisma = new PrismaClient();
