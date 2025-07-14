@@ -10,7 +10,7 @@ import path from 'path';
 const app = express();
 
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: ["http://localhost:5173", "http://localhost:5174","https://blogging-fullstack-app-umnu.vercel.app/"],
   credentials: true,
 }));
 app.use(express.json());
