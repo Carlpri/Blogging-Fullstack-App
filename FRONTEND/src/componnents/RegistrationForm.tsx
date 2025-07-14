@@ -28,7 +28,7 @@ const RegisterForm = () => {
       setTimeout(() => navigate('/login'), 2000);
     } catch (err: unknown) {
       if (err && typeof err === 'object' && 'response' in err) {
-        const axiosError = err as any;
+        const axiosError = err as { response: { data: { message: string } } };
         setError(axiosError.response?.data?.message || 'Registration failed');
       } else {
         setError('Unexpected error occurred');

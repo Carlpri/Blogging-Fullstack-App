@@ -229,8 +229,8 @@ model Blog {
    ```
 
 4. **Access the Application**
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:5678
+   - Frontend: coming soon...
+   - Backend API: coming soon...
 
 ## 🔒 Security Features
 
@@ -273,9 +273,7 @@ The application is fully responsive and works on:
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
 
-## 📄 License
 
-This project is licensed under the ISC License.
 
 ## 👥 Contributing
 
@@ -287,7 +285,7 @@ This project is licensed under the ISC License.
 
 ## 📞 Support
 
-For support and questions, please contact the development team.
+For support and questions, please contact mdahanacarlos@gmail.com.
 
 ---
 
