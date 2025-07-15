@@ -58,7 +58,7 @@ export const ChangePasswordForm = () => {
       }
 
       const response = await api.post(
-        '/auth/change-password',
+        'api/auth/change-password',
         {
           currentPassword: form.currentPassword,
           newPassword: form.newPassword,
