@@ -23,8 +23,7 @@ import path from 'path';
 
 const router: Router = Router();
 
-router.post(
-  "/create",
+router.post(  "/blogs/new",
   verifyToken,
   validate(blogSchema),
   createBlog
