@@ -16,6 +16,7 @@ export const CreateBlogForm = () => {
         tags: ''
     });
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -23,8 +24,12 @@ export const CreateBlogForm = () => {
         setForm({ ...form, [name]: value });
     };
     
+    
+
     const handleSubmit = async () => {
         setError('');
+        setIsLoading(true);
+
         try {
             const response = await api.post('/api/blogs/create', form, {
                 headers: {
@@ -41,6 +46,8 @@ export const CreateBlogForm = () => {
             } else {
                 setError('Unexpected Error occurred');
             }
+        }finally {
+            setIsLoading(false);
         }
     }
 
@@ -127,8 +134,9 @@ export const CreateBlogForm = () => {
                     fullWidth
                     sx={{ mt: 2 }}
                     onClick={handleSubmit}
+                    disabled={isLoading}
                 >
-                    Create Post
+                    {isLoading ? 'Creating...' : 'Create Blog Post'}
                 </Button>
             </Box>
             
