@@ -57,7 +57,7 @@ export const EditProfileForm = () => {
         setError('Failed to load user information');
       }
     } else {
-      navigate('/login');
+      navigate('api/login');
     }
   }, [navigate]);
 
@@ -97,7 +97,7 @@ export const EditProfileForm = () => {
       setSuccess('Profile updated successfully!');
       
       setTimeout(() => {
-        navigate('/blogs');
+        navigate('api/blogs');
       }, 2000);
 
     } catch (err: unknown) {
