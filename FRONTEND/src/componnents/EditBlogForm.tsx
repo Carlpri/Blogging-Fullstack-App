@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { TextField, Button, Typography, Box, Container, Alert, Card, CardMedia } from '@mui/material';
 import { api } from '../services/api';
 import { useNavigate, useParams } from 'react-router-dom';
-import {presetName, CLOUDINARY_URL} from './Cloudinary.tsx';
+import {presetName, CLOUDINARY_URL} from './Cloudinary';
 import axios from 'axios';
 
 export const EditBlogForm = () => {
