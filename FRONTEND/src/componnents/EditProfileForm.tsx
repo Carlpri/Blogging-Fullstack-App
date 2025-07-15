@@ -97,7 +97,7 @@ export const EditProfileForm = () => {
       setSuccess('Profile updated successfully!');
       
       setTimeout(() => {
-        navigate('api/blogs');
+        navigate('/blogs');
       }, 2000);
 
     } catch (err: unknown) {
