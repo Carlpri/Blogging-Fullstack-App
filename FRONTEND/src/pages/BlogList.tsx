@@ -84,12 +84,7 @@ const BlogList = () => {
   };
 
 
-    function truncateBySentences(text: string, sentenceCount: number): string {
-    const sentences = text.match(/[^.!?]+[.!?]+/g);
-    if (!sentences) return text;
-    return sentences.slice(0, sentenceCount).join(" ").trim() + (sentences.length > sentenceCount ? "..." : "");
-  }
-
+  
 
 
 
@@ -251,23 +246,23 @@ const BlogList = () => {
                   )}
                   <CardContent sx={{ flexGrow: 1, paddingBottom: "20px" }}>
                     <Typography gutterBottom variant="h5" component="div">
-                      {truncateBySentences(blog.title, 2)}
+                      {blog.title}
                     </Typography>
                     <Typography
                       variant="body2"
                       color="text.secondary"
                       sx={{ mb: 1 }}
                     >
-                     {truncateBySentences( blog.synopsis,2)}
-
+                      <b>{blog.synopsis}</b>
                     </Typography>
                     <Typography
                       variant="body2"
                       color="text.secondary"
                       sx={{ mb: 2 }}
                     >
-                      {truncateBySentences(blog.content, 3)}
-
+                      {blog.content.length > 100
+                        ? `${blog.content.substring(0, 100)}...`
+                        : blog.content}
                     </Typography>
 
                     <Typography
