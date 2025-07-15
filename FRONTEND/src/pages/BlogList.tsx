@@ -65,7 +65,7 @@ const BlogList = () => {
 
 
   const handleCreateBlog = () => {
-    navigate("/blogs/new");
+    navigate("api/blogs/new");
   };
 
   const handleDeleteBlog = async (blogId: string) => {

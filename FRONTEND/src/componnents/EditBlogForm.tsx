@@ -25,7 +25,7 @@ export const EditBlogForm = () => {
         const fetchBlog = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await api.get(`/blogs/${id}`, {
+                const response = await api.get(`api/blogs/${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -96,7 +96,7 @@ export const EditBlogForm = () => {
     const handleSubmit = async () => {
         try {
             const token = localStorage.getItem('token');
-            await api.patch(`/blogs/${id}`, {
+            await api.patch(`api/blogs/${id}`, {
                 title: form.title,
                 content: form.content,
                 synopsis: form.synopsis,
