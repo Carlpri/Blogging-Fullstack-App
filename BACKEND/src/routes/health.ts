@@ -4,13 +4,13 @@ import { PrismaClient } from "@prisma/client";
 const router = Router();
 const prisma = new PrismaClient();
 
-// Health check endpoint
+
 router.get("/", async (req, res) => {
   try {
-    // Test database connection
+    
     await prisma.$queryRaw`SELECT 1`;
     
-    // Get basic stats
+   
     const userCount = await prisma.user.count();
     const blogCount = await prisma.blog.count();
     
@@ -34,10 +34,10 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Database test endpoint
+
 router.get("/db-test", async (req, res) => {
   try {
-    // Test basic CRUD operations
+   
     const testUser = await prisma.user.findFirst({
       select: { id: true, firstName: true, lastName: true, emailAddress: true }
     });
@@ -74,7 +74,7 @@ router.get("/db-test", async (req, res) => {
   }
 });
 
-// Simple connection test
+
 router.get("/connection-test", async (req, res) => {
   try {
     await prisma.$connect();
