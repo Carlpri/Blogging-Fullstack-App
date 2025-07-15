@@ -55,7 +55,7 @@ export const BlogDetail = () => {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const response = await api.get(`/blogs/${id}`);
+        const response = await api.get(`api/blogs/${id}`);
         console.log('Blog data received:', response.data);
         console.log('Date fields:', {
           dateCreated: response.data.dateCreated,
@@ -86,10 +86,10 @@ export const BlogDetail = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await api.delete(`/blogs/${id}`, {
+      await api.delete(`api/blogs/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      navigate('/blogs');
+      navigate('api/blogs');
     } catch (err) {
       if (err && typeof err === 'object' && 'response' in err) {
         const axiosError = err as { response?: { data?: { message?: string } } };
