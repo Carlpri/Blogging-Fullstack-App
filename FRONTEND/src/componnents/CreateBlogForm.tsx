@@ -4,7 +4,7 @@ import { TextField, Button, Typography, Box, Container, Alert } from '@mui/mater
 import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { presetName, CLOUDINARY_URL } from './Cloudinary.tsx'; 
+import { presetName, CLOUDINARY_URL } from './Cloudinary'; 
 
 export const CreateBlogForm = () => {
 
